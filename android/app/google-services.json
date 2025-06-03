@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "9961320855",
+    "project_id": "abdullah-c77db",
+    "storage_bucket": "abdullah-c77db.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:9961320855:android:32db1c56014478154294d2",
+        "android_client_info": {
+          "package_name": "com.example.db"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCJT_CEWQOou3fYXIwo2IZRVQ51-z1tBio"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
