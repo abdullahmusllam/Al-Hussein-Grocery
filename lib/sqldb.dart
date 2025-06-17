@@ -117,16 +117,20 @@ class SqlDb {
     // Create debts table
     await db.execute('''
       CREATE TABLE debts(
-        id INTEGER PRIMARY KEY,
+        id TEXT PRIMARY KEY,
         customerId TEXT,
         customerName TEXT,
-        customerPhone TEXT,
-        totalDebt REAL,
-        debtDiscount REAL,
-        debtDate DATE,
-        isSync BOOLEAN,
-        timestamp INTEGER
+        totalDebt INTEGER,
+        isSync BOOLEAN
       )
+    ''');
+
+    await db.execute('''
+    CREATE TABLE CUSTOMER(
+    id TEXT PRIMARY KEY,
+    customer_name TEXT,
+    phone_number INTEGER
+    )
     ''');
 
 /*3 _onCreate(Database db, int version) async{
@@ -197,6 +201,19 @@ class SqlDb {
   }
 
   Future<bool> checkIfitemExists(String table, int id, String column) async {
+    try {
+      final db = await sqlState.db;
+      final result = await db.query(table, where: '$column = ?', whereArgs: [id]);
+      bool exists = result.isNotEmpty;
+      print('===== التحقق من وجود $table.$column = $id: $exists =====');
+      return exists;
+    } catch (e) {
+      print('===== خطأ في التحقق من وجود العنصر: $e =====');
+      return false;
+    }
+  }
+
+  Future<bool> checkIfitemExists2(String table, String id, String column) async {
     try {
       final db = await sqlState.db;
       final result = await db.query(table, where: '$column = ?', whereArgs: [id]);

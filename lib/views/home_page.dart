@@ -1,8 +1,10 @@
-import 'package:db/controllers/sync.dart';
+import 'package:db/views/debts_page.dart';
 import 'package:db/views/orders_page.dart';
 import 'package:db/views/product_page.dart';
 import 'package:flutter/material.dart';
-import '../controllers/controller.dart';
+import 'package:get/get.dart';
+
+import 'mainscreen.dart';
 
 class MainPage extends StatefulWidget {
   @override
@@ -13,15 +15,10 @@ class _MainPageState extends State<MainPage> {
   @override
   void initState() {
     super.initState();
-    syncData();
-    controller.addToLocalProducts();
-    controller.addToLocalOrders();
+   
   }
 
-  Future<void> syncData() async {
-    await sync.syncProduct();
-    await sync.syncDebts();
-  }
+  
 
   void _showLoadingDialog() {
     showDialog(
@@ -54,12 +51,17 @@ class _MainPageState extends State<MainPage> {
   void onButtonPressed(String buttonName, BuildContext context) {
     print('$buttonName button pressed');
     if (buttonName == 'الطلبات') {
-      Navigator.push(context, MaterialPageRoute(builder: (context) => OrdersPage()));
+      Get.to(OrdersPage());
     }
     if (buttonName == 'المنتجات') {
-      Navigator.push(context, MaterialPageRoute(builder: (context) => ManageProductsPage()));
+      Get.to(ManageProductsPage());
     }
-    if (buttonName == 'الديون') {}
+    if (buttonName == 'الديون') {
+      Get.to(DebtsPage());
+    }
+    if(buttonName == 'تحديث البيانات') {
+      Get.to(MainScreen());
+    }
   }
 
   @override
@@ -113,13 +115,20 @@ class _MainPageState extends State<MainPage> {
                       onPressed: () => onButtonPressed('المنتجات', context),
                     ),
                     SizedBox(height: 30),
-                    // _buildMenuButton(
-                    //   context: context,
-                    //   title: 'الديون',
-                    //   icon: Icons.credit_card,
-                    //   color: Color(0xFF2196F3), // الأزرق
-                    //   onPressed: () => onButtonPressed('الديون', context),
-                    // ),
+                    _buildMenuButton(
+                      context: context,
+                      title: 'الديون',
+                      icon: Icons.credit_card,
+                      color: Color(0xFF2196F3), // الأزرق
+                      onPressed: () => onButtonPressed('الديون', context),
+                    ),SizedBox(height: 30),
+                    _buildMenuButton(
+                      context: context,
+                      title: 'تحديث البيانات',
+                      icon: Icons.credit_card,
+                      color: Color(0xFF2196F3), // الأزرق
+                      onPressed: () => onButtonPressed('تحديث البيانات', context),
+                    ),
                   ],
                 ),
               ),

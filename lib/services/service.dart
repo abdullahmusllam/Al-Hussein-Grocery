@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 import '../models/debt.dart';
 import '../models/order.dart' as order_model;
 import '../models/order.dart';
@@ -13,6 +14,11 @@ class Service {
 
   final CollectionReference _productsCollection =
       FirebaseFirestore.instance.collection('products');
+
+  Future<bool> connected() async {
+    bool conn = await InternetConnectionChecker.createInstance().hasConnection;
+    return conn;
+  }
 
   /// الحصول على كل الديون
   Future<List<Debt>> getDebts() async {
@@ -29,8 +35,8 @@ class Service {
   }
 
   /// إضافة دين جديد
-  Future<void> addDebt(Debt debt, int id) async {
-     await _debtsCollection.doc(id.toString()).set(debt.toFirestore());
+  Future<void> addDebt(Debt debt, String id) async {
+     await _debtsCollection.doc(id).set(debt.toFirestore());
   }
 
   /// تحديث دين موجود
@@ -39,26 +45,29 @@ class Service {
   }
 
   /// حذف دين
-  Future<void> deleteDebt(int id) async {
+  Future<void> deleteDebt(String id) async {
+    if(!await connected()){
+
+    }
     await _debtsCollection.doc(id.toString()).delete();
   }
 
   /// الحصول على إجمالي الديون المستحقة
-  Future<double> getTotalActiveDebts() async {
-    final snapshot =
-        await _debtsCollection.where('isSettled', isEqualTo: false).get();
-
-    if (snapshot.docs.isEmpty) return 0.0;
-
-    double total = 0.0;
-    for (var doc in snapshot.docs) {
-      final debt =
-          Debt.fromFirestore(doc.id, doc.data() as Map<String, dynamic>);
-      total += (debt.totalDebt - debt.debtDiscount);
-    }
-
-    return total;
-  }
+  // Future<double> getTotalActiveDebts() async {
+  //   final snapshot =
+  //       await _debtsCollection.where('isSettled', isEqualTo: false).get();
+  //
+  //   if (snapshot.docs.isEmpty) return 0.0;
+  //
+  //   double total = 0.0;
+  //   for (var doc in snapshot.docs) {
+  //     final debt =
+  //         Debt.fromFirestore(doc.id, doc.data() as Map<String, dynamic>);
+  //     total += (debt.totalDebt - debt.debtDiscount!);
+  //   }
+  //
+  //   return total;
+  // }
 
   
 
@@ -157,8 +166,6 @@ class Service {
   }
 
 
-
-
   Future<bool> checkDocumentExists(String collection, int id) async {
     try {
       DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
@@ -173,6 +180,22 @@ class Service {
       return false;
     }
   }
+
+  Future<bool> checkDocumentExists2(String collection, String id) async {
+    try {
+      DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
+          .collection(collection)
+          .doc(id)
+          .get();
+      print("Find document");
+      return documentSnapshot.exists;
+
+    } catch (e) {
+      print('Not found document');
+      return false;
+    }
+  }
+
 }
 
 Service service = Service();

@@ -3,8 +3,14 @@ import 'package:db/models/order.dart';
 import 'package:db/models/product.dart';
 import 'package:db/services/service.dart';
 import 'package:db/sqldb.dart';
+import 'package:sqflite/sqflite.dart';
 
 class Sync {
+  // Future<Database> data() async {
+  //   final db = await sqlState.db;
+  //   return db;
+  // }
+
   Future<void> syncProduct() async {
     print('===== sync Product =====');
     List<Map<String, dynamic>> map =
@@ -60,22 +66,24 @@ class Sync {
   // }
 
   Future<void> syncDebts() async {
+    final db = await sqlState.db;
     List<Map<String, dynamic>> map =
         await sqlState.readDataID("debts", 'isSync', 0);
     if (map.isNotEmpty) {
       List<Debt> debts = map.map((map) => Debt.fromJson(map)).toList();
       for (Debt debt in debts) {
-        bool exists = await service.checkDocumentExists('debts', debt.id);
+        bool exists = await service.checkDocumentExists2('debts', debt.id!);
+        print('==============');
         if (exists) {
+          debt.isSync = 1;
           await service.updateDebt(debt);
-          await sqlState
-              .updateData('update debts set isSync = 1 where id = ${debt.id}');
+          await db.update('debts', debt.toMap()..remove(debt.id), where: 'id = ?', whereArgs: [debt.id]);
 
           print('===== sync debt (update) =====');
         } else {
-          await service.addDebt(debt, debt.id);
-          await sqlState
-              .updateData('update debts set isSync = 1 where id = ${debt.id}');
+          debt.isSync = 1;
+          await service.addDebt(debt, debt.id!);
+          await db.update('debts', debt.toMap()..remove(debt.id), where: 'id = ?', whereArgs: [debt.id]);
 
           print('===== sync order (add) =====');
         }

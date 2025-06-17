@@ -1,3 +1,4 @@
+import 'package:db/views/mainscreen.dart';
 import 'package:db/views/prodect_form.dart';
 import 'package:db/firebase_options.dart';
 import 'package:db/sqldb.dart';
@@ -6,6 +7,7 @@ import 'package:db/views/home_page.dart';
 import 'package:db/views/product_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'controllers/controller.dart';
 
@@ -22,7 +24,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'بقالة الحسين ',
       theme: ThemeData(
@@ -108,7 +110,7 @@ class MyApp extends StatelessWidget {
         '/products': (context) => ManageProductsPage(),
         '/orders': (context) => OrdersPage(),
       },
-      home: MainPage(),
+      home: MainScreen(),
     );
   }
 }
