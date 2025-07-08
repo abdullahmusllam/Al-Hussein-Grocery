@@ -27,7 +27,6 @@ class Sync {
           await sqlState.updateData(
               'update products set isSync = 1 where id = ${product.id}');
           print('===== sync product (update) =====');
-
         } else {
           await service.addProduct(product, product.id!);
           await sqlState.updateData(
@@ -72,18 +71,21 @@ class Sync {
     if (map.isNotEmpty) {
       List<Debt> debts = map.map((map) => Debt.fromJson(map)).toList();
       for (Debt debt in debts) {
-        bool exists = await service.checkDocumentExists2('debts', debt.id!);
+        print('===== ccccccccc =====');
+        bool exists = await service.checkDocumentExists2('debts', debt.id);
         print('==============');
         if (exists) {
           debt.isSync = 1;
           await service.updateDebt(debt);
-          await db.update('debts', debt.toMap()..remove(debt.id), where: 'id = ?', whereArgs: [debt.id]);
+          await db.update('debts', debt.toMap()..remove(debt.id),
+              where: 'id = ?', whereArgs: [debt.id]);
 
           print('===== sync debt (update) =====');
         } else {
           debt.isSync = 1;
-          await service.addDebt(debt, debt.id!);
-          await db.update('debts', debt.toMap()..remove(debt.id), where: 'id = ?', whereArgs: [debt.id]);
+          await service.addDebt(debt, debt.id);
+          await db.update('debts', debt.toMap()..remove(debt.id),
+              where: 'id = ?', whereArgs: [debt.id]);
 
           print('===== sync order (add) =====');
         }

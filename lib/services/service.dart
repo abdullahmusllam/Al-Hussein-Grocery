@@ -36,19 +36,17 @@ class Service {
 
   /// إضافة دين جديد
   Future<void> addDebt(Debt debt, String id) async {
-     await _debtsCollection.doc(id).set(debt.toFirestore());
+    await _debtsCollection.doc(id).set(debt.toFirestore());
   }
 
   /// تحديث دين موجود
   Future<void> updateDebt(Debt debt) async {
-    await _debtsCollection.doc(debt.id.toString()).update(debt.toFirestore());
+    await _debtsCollection.doc(debt.id).update(debt.toFirestore());
   }
 
   /// حذف دين
   Future<void> deleteDebt(String id) async {
-    if(!await connected()){
-
-    }
+    if (!await connected()) {}
     await _debtsCollection.doc(id.toString()).delete();
   }
 
@@ -68,8 +66,6 @@ class Service {
   //
   //   return total;
   // }
-
-  
 
   // ========== Product Methods ==========
 
@@ -111,17 +107,14 @@ class Service {
     await _productsCollection.doc(id.toString()).delete();
   }
 
- 
- 
   // ========== Order Methods ==========
 
   /// الحصول على جميع الطلبات
   Future<List<OrderModel>> getOrders() async {
     try {
       print('===== جلب جميع الطلبات من Firestore =====');
-      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-          .collection('orders')
-          .get();
+      QuerySnapshot querySnapshot =
+          await FirebaseFirestore.instance.collection('orders').get();
 
       if (querySnapshot.docs.isEmpty) {
         print('===== لا توجد طلبات في Firestore =====');
@@ -132,12 +125,14 @@ class Service {
       for (var doc in querySnapshot.docs) {
         try {
           var data = doc.data() as Map<String, dynamic>;
-          print('===== بيانات الطلب من Firestore (Doc ID: ${doc.id}): $data =====');
+          print(
+              '===== بيانات الطلب من Firestore (Doc ID: ${doc.id}): $data =====');
           var order = OrderModel.fromJson(data);
           orders.add(order);
           print('===== تم تحويل الطلب ID: ${order.id} بنجاح =====');
         } catch (e) {
-          print('===== خطأ في تحويل الطلب من Firestore (Doc ID: ${doc.id}): $e =====');
+          print(
+              '===== خطأ في تحويل الطلب من Firestore (Doc ID: ${doc.id}): $e =====');
         }
       }
 
@@ -149,10 +144,9 @@ class Service {
     }
   }
 
-
   /// إضافة طلب جديد
   Future<void> addOrder(OrderModel order, int id) async {
-     await _ordersCollection.doc(id.toString()).set(order.toJson());
+    await _ordersCollection.doc(id.toString()).set(order.toJson());
   }
 
   /// تحديث طلب موجود
@@ -165,7 +159,6 @@ class Service {
     await _ordersCollection.doc(id.toString()).delete();
   }
 
-
   Future<bool> checkDocumentExists(String collection, int id) async {
     try {
       DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
@@ -174,7 +167,6 @@ class Service {
           .get();
       print("Find document");
       return documentSnapshot.exists;
-
     } catch (e) {
       print('Not found document');
       return false;
@@ -183,19 +175,16 @@ class Service {
 
   Future<bool> checkDocumentExists2(String collection, String id) async {
     try {
-      DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
-          .collection(collection)
-          .doc(id)
-          .get();
+      print('===== check =====');
+      DocumentSnapshot documentSnapshot =
+          await FirebaseFirestore.instance.collection(collection).doc(id).get();
       print("Find document");
       return documentSnapshot.exists;
-
     } catch (e) {
       print('Not found document');
       return false;
     }
   }
-
 }
 
 Service service = Service();

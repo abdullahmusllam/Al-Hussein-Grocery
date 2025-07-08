@@ -20,9 +20,10 @@ class Controller extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    getLocalProducts();
+    print('===== init =====');
+    // getLocalProducts();
     getLocalDebts();
-    getLocalOrders();
+    // getLocalOrders();
     searchController
         .addListener(() => search.value = searchController.text.toLowerCase());
   }
@@ -34,6 +35,11 @@ class Controller extends GetxController {
   var customers = <Customer>[].obs;
   RxString search = ''.obs;
   TextEditingController searchController = TextEditingController();
+
+  Future<bool> connected() async {
+    bool conn = await InternetConnectionChecker.createInstance().hasConnection;
+    return conn;
+  }
 
   // Product operations
   Future<void> getLocalProducts() async {
@@ -339,22 +345,21 @@ class Controller extends GetxController {
   Future<void> addDebt(Debt debt, int type) async {
     ///check if there is internet connection
     final db = await sqlState.db;
-    bool isConnected =
-        await InternetConnectionChecker.createInstance().hasConnection;
-    if (isConnected) {
-      print('Connected to internet');
-      String id = uuid.v4();
+    if (type == 1) {
+      final String id = uuid.v4();
       debt.id = id;
       debt.customerId = id;
-      if (type == 1) {
+      if (await connected()) {
         debt.isSync = 1;
-        await service.addDebt(debt, debt.id!);
+        await service.addDebt(debt, debt.id);
+        await db.insert('debts', debt.toMap());
+      } else {
+        debt.isSync = 0;
+        await db.insert('debts', debt.toMap());
+        Get.snackbar('local', 'تمت الاضافة في الجهاز فقط');
       }
-      await db.insert('debts', debt.toMap());
     } else {
-      print('No internet connection');
-      // Add to sync queue
-      debt.isSync = 0;
+      /// data from firebase
       await db.insert('debts', debt.toMap());
     }
   }
@@ -368,6 +373,7 @@ class Controller extends GetxController {
       bool isConnected =
           await InternetConnectionChecker.createInstance().hasConnection;
       if (isConnected) {
+        debt.isSync = 1;
         await service.updateDebt(debt);
         await db.update('debts', debt.toMap()..remove(debt.id),
             where: 'id = ?', whereArgs: [debt.id]);
@@ -409,8 +415,7 @@ class Controller extends GetxController {
 
       for (var debt in responseFirebase) {
         // Debt debtModel = Debt.fromJson(debt.toMap());
-        bool exists =
-            await sqlState.checkIfitemExists2("debts", debt.id!, "id");
+        bool exists = await sqlState.checkIfitemExists2("debts", debt.id, "id");
         print('========================');
         if (exists) {
           // data to firebase = 0

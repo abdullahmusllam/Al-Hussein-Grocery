@@ -24,41 +24,40 @@ class _MainScreenState extends State<MainScreen> {
     bool conn = await InternetConnectionChecker.createInstance().hasConnection;
     return conn;
   }
+
   Future<void> _loadData() async {
     try {
-      if(!await connected()){
+      if (!await connected()) {
         return Get.to(() => MainPage());
       }
       // Update loading message
       setState(() {
         _loadingMessage = 'جاري مزامنة البيانات...';
       });
-      
+
       // Sync data from remote database
-      await sync.syncProduct();
+      // await sync.syncProduct();
       await sync.syncDebts();
 
-      
       setState(() {
         _loadingMessage = 'جاري تحميل ,ومزامنة البيانات ...';
       });
-      
+
       // Load data to local storage
-      await controller.addToLocalProducts();
-      await controller.addToLocalOrders();
+      // await controller.addToLocalProducts();
+      // await controller.addToLocalOrders();
       await controller.addToLocalDebts();
-      
+
       // Delay for a moment to show completion message
       setState(() {
         _loadingMessage = 'تم تحميل البيانات بنجاح!';
       });
-      
+
       // Wait a moment before navigating
       await Future.delayed(Duration(seconds: 1));
-      
+
       // Navigate to main page
       Get.off(MainPage());
-
     } catch (e) {
       setState(() {
         print(e);
@@ -84,7 +83,7 @@ class _MainScreenState extends State<MainScreen> {
                 size: 80,
               ),
               SizedBox(height: 20),
-              
+
               // App name
               Text(
                 'بقالة الحسين',
@@ -95,13 +94,13 @@ class _MainScreenState extends State<MainScreen> {
                 ),
               ),
               SizedBox(height: 50),
-              
+
               // Loading indicator
               CircularProgressIndicator(
                 valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF2196F3)),
               ),
               SizedBox(height: 30),
-              
+
               // Loading message
               Text(
                 _loadingMessage,

@@ -15,10 +15,7 @@ class _MainPageState extends State<MainPage> {
   @override
   void initState() {
     super.initState();
-   
   }
-
-  
 
   void _showLoadingDialog() {
     showDialog(
@@ -27,11 +24,13 @@ class _MainPageState extends State<MainPage> {
         builder: (BuildContext context) {
           return AlertDialog(
             backgroundColor: Color(0xFFFFFFFF), // الأبيض
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             content: Row(
               children: [
                 CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF2196F3)), // الأزرق
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                      Color(0xFF2196F3)), // الأزرق
                 ),
                 SizedBox(width: 20),
                 Expanded(
@@ -59,7 +58,7 @@ class _MainPageState extends State<MainPage> {
     if (buttonName == 'الديون') {
       Get.to(DebtsPage());
     }
-    if(buttonName == 'تحديث البيانات') {
+    if (buttonName == 'تحديث البيانات') {
       Get.to(MainScreen());
     }
   }
@@ -121,13 +120,15 @@ class _MainPageState extends State<MainPage> {
                       icon: Icons.credit_card,
                       color: Color(0xFF2196F3), // الأزرق
                       onPressed: () => onButtonPressed('الديون', context),
-                    ),SizedBox(height: 30),
+                    ),
+                    SizedBox(height: 30),
                     _buildMenuButton(
                       context: context,
                       title: 'تحديث البيانات',
-                      icon: Icons.credit_card,
+                      icon: Icons.update,
                       color: Color(0xFF2196F3), // الأزرق
-                      onPressed: () => onButtonPressed('تحديث البيانات', context),
+                      onPressed: () =>
+                          onButtonPressed('تحديث البيانات', context),
                     ),
                   ],
                 ),
